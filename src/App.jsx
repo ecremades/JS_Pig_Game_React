@@ -1,14 +1,28 @@
 import './App.css';
-import { useState, useEffect } from 'react'; //
+import { useState, useEffect } from 'react';
 
+/**
+ * Componente principal del juego Pig Game
+ * Un juego de dados para dos jugadores donde el objetivo es alcanzar exactamente 100 puntos
+ */
 function App() {
+  // Estado para controlar el jugador activo (0 o 1)
   const [activePlayer, setActivePlayer] = useState(0);
+  // Estado para almacenar las puntuaciones totales de ambos jugadores
   const [score, setScore] = useState([0, 0]);
+  // Estado para la puntuación temporal del turno actual
   const [current, setCurrent] = useState(0);
+  // Estado para el número actual del dado
   const [diceNumber, setDiceNumber] = useState(0);
+  // Estado para los nombres de los jugadores
   const [playerNames, setPlayerNames] = useState(['', '']);
+  // Estado para controlar si el juego ha comenzado
   const [gameStarted, setGameStarted] = useState(false);
 
+  /**
+   * Maneja el envío del formulario de nombres
+   * Inicia el juego solo si ambos nombres están completos
+   */
   const handleNameSubmit = (e) => {
     e.preventDefault();
     if (playerNames[0].trim() && playerNames[1].trim()) {
@@ -18,14 +32,22 @@ function App() {
     }
   };
 
+  /**
+   * Actualiza el nombre del jugador en el estado
+   * @param {number} index - Índice del jugador (0 o 1)
+   * @param {string} value - Nuevo nombre del jugador
+   */
   const handleNameChange = (index, value) => {
     const newNames = [...playerNames];
     newNames[index] = value;
     setPlayerNames(newNames);
   };
 
+  /**
+   * Maneja la acción de mantener los puntos (HOLD)
+   * Añade los puntos temporales a la puntuación total si no excede 100
+   */
   const handleHold = () => {
-    // Creamos un nuevo array usando destructuración
     const newScore = [...score];
     const potentialScore = newScore[activePlayer] + current;
 
@@ -38,7 +60,6 @@ function App() {
 
     // Actualizamos el valor del jugador activo
     newScore[activePlayer] = potentialScore;
-    // Establecemos el nuevo array
     setScore(newScore);
 
     if (potentialScore === 100) {
@@ -48,12 +69,14 @@ function App() {
       return;
     }
 
-    // Cambiamos de jugador
+    // Cambiamos de jugador y reseteamos puntuación temporal
     setActivePlayer(activePlayer === 0 ? 1 : 0);
-    // Reseteamos el current
     setCurrent(0);
   };
 
+  /**
+   * Reinicia el juego a su estado inicial
+   */
   const handleNewGame = () => {
     setActivePlayer(0);
     setScore([0, 0]);
@@ -63,13 +86,20 @@ function App() {
     setPlayerNames(['', '']);
   };
 
+  /**
+   * Genera un nuevo número aleatorio para el dado (1-6)
+   */
   const handleRollDice = () => {
     setDiceNumber(Math.floor(Math.random() * 6) + 1);
   };
 
+  /**
+   * Efecto que se ejecuta cuando cambia el número del dado
+   * Gestiona la lógica de puntuación y cambio de turno
+   */
   useEffect(() => {
     if (diceNumber === 1) {
-      setActivePlayer((prevActivePlayer) => (prevActivePlayer === 0 ? 1 : 0)); // Cambia entre 0 y 1 si sale un 1
+      setActivePlayer((prevActivePlayer) => (prevActivePlayer === 0 ? 1 : 0));
       setCurrent(0);
     } else {
       setCurrent((prevCurrent) => prevCurrent + diceNumber);
